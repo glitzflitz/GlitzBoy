@@ -410,3 +410,36 @@ void write_byte(Gameboy *gb, const uf16 address, const u8 value)
 
 	(gb->Error)(gb, INVALID_WRITE, address);
 }
+
+uf32 get_save_size(Gameboy *gb)
+{
+	const uf16 ram_size_location = 0x0149;
+	const uf32 ram_sizes[] =
+		{
+			0x00, 0x800, 0x2000, 0x8000, 0x20000};
+	u8 ram_size = gb->read_rom(gb, ram_size_location);
+	return ram_sizes[ram_size];
+}
+
+const char *rom_title(Gameboy *gb, char title_str[static 16])
+{
+	uf16 title_loc = 0x134;
+	const uf16 title_end = 0x143;
+	const char *title_start = title_str;
+
+	for (; title_loc <= title_end; title_loc++)
+	{
+		const char title_char = gb->read_rom(gb, title_loc);
+
+		if (title_char >= ' ' && title_char <= '_')
+		{
+			*title_str = title_char;
+			title_str++;
+		}
+		else
+			break;
+	}
+
+	*title_str = '\0';
+	return title_start;
+}
