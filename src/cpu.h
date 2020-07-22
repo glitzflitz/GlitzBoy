@@ -333,6 +333,349 @@ void cpu_step(Gameboy *gb)
 		gb->cpu_reg.a = read_byte(gb, gb->cpu_reg.BC);
 		break;
 
+	case 0x0B:
+		gb->cpu_reg.BC--;
+		break;
+
+	case 0x0C:
+		gb->cpu_reg.C++;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.C == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.C & 0x0F) == 0x00);
+		break;
+
+	case 0x0D:
+		gb->cpu_reg.C--;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.C == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.C & 0x0F) == 0x0F);
+		break;
+
+	case 0x0E:
+		gb->cpu_reg.C = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x0F:
+		gb->cpu_reg.raw_bits.C = gb->cpu_reg.a & 0x01;
+		gb->cpu_reg.a = (gb->cpu_reg.a >> 1) | (gb->cpu_reg.a << 7);
+		gb->cpu_reg.raw_bits.Z = 0;
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = 0;
+		break;
+
+	case 0x10:
+
+		break;
+
+	case 0x11:
+		gb->cpu_reg.E = read_byte(gb, gb->cpu_reg.PC++);
+		gb->cpu_reg.D = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x12:
+		write_byte(gb, gb->cpu_reg.DE, gb->cpu_reg.a);
+		break;
+
+	case 0x13:
+		gb->cpu_reg.DE++;
+		break;
+
+	case 0x14:
+		gb->cpu_reg.D++;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.D == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.D & 0x0F) == 0x00);
+		break;
+
+	case 0x15:
+		gb->cpu_reg.D--;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.D == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.D & 0x0F) == 0x0F);
+		break;
+
+	case 0x16:
+		gb->cpu_reg.D = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x17:
+	{
+		u8 temp = gb->cpu_reg.a;
+		gb->cpu_reg.a = (gb->cpu_reg.a << 1) | gb->cpu_reg.raw_bits.C;
+		gb->cpu_reg.raw_bits.Z = 0;
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = 0;
+		gb->cpu_reg.raw_bits.C = (temp >> 7) & 0x01;
+		break;
+	}
+
+	case 0x18:
+	{
+		int8_t temp = (int8_t)read_byte(gb, gb->cpu_reg.PC++);
+		gb->cpu_reg.PC += temp;
+		break;
+	}
+
+	case 0x19:
+	{
+		uf32 temp = gb->cpu_reg.HL + gb->cpu_reg.DE;
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H =
+			(temp ^ gb->cpu_reg.HL ^ gb->cpu_reg.DE) & 0x1000 ? 1 : 0;
+		gb->cpu_reg.raw_bits.C = (temp & 0xFFFF0000) ? 1 : 0;
+		gb->cpu_reg.HL = (temp & 0x0000FFFF);
+		break;
+	}
+
+	case 0x1A:
+		gb->cpu_reg.a = read_byte(gb, gb->cpu_reg.DE);
+		break;
+
+	case 0x1B:
+		gb->cpu_reg.DE--;
+		break;
+
+	case 0x1C:
+		gb->cpu_reg.E++;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.E == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.E & 0x0F) == 0x00);
+		break;
+
+	case 0x1D:
+		gb->cpu_reg.E--;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.E == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.E & 0x0F) == 0x0F);
+		break;
+
+	case 0x1E:
+		gb->cpu_reg.E = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x1F:
+	{
+		u8 temp = gb->cpu_reg.a;
+		gb->cpu_reg.a = gb->cpu_reg.a >> 1 | (gb->cpu_reg.raw_bits.C << 7);
+		gb->cpu_reg.raw_bits.Z = 0;
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = 0;
+		gb->cpu_reg.raw_bits.C = temp & 0x1;
+		break;
+	}
+
+	case 0x20:
+		if (!gb->cpu_reg.raw_bits.Z)
+		{
+			int8_t temp = (int8_t)read_byte(gb, gb->cpu_reg.PC++);
+			gb->cpu_reg.PC += temp;
+			inst_cycles += 4;
+		}
+		else
+			gb->cpu_reg.PC++;
+
+		break;
+
+	case 0x21:
+		gb->cpu_reg.L = read_byte(gb, gb->cpu_reg.PC++);
+		gb->cpu_reg.H = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x22:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.a);
+		gb->cpu_reg.HL++;
+		break;
+
+	case 0x23:
+		gb->cpu_reg.HL++;
+		break;
+
+	case 0x24:
+		gb->cpu_reg.H++;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.H == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.H & 0x0F) == 0x00);
+		break;
+
+	case 0x25:
+		gb->cpu_reg.H--;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.H == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.H & 0x0F) == 0x0F);
+		break;
+
+	case 0x26:
+		gb->cpu_reg.H = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x27:
+	{
+		u16 a = gb->cpu_reg.a;
+
+		if (gb->cpu_reg.raw_bits.N)
+		{
+			if (gb->cpu_reg.raw_bits.H)
+				a = (a - 0x06) & 0xFF;
+
+			if (gb->cpu_reg.raw_bits.C)
+				a -= 0x60;
+		}
+		else
+		{
+			if (gb->cpu_reg.raw_bits.H || (a & 0x0F) > 9)
+				a += 0x06;
+
+			if (gb->cpu_reg.raw_bits.C || a > 0x9F)
+				a += 0x60;
+		}
+
+		if ((a & 0x100) == 0x100)
+			gb->cpu_reg.raw_bits.C = 1;
+
+		gb->cpu_reg.a = a;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.a == 0);
+		gb->cpu_reg.raw_bits.H = 0;
+
+		break;
+	}
+
+	case 0x28:
+		if (gb->cpu_reg.raw_bits.Z)
+		{
+			int8_t temp = (int8_t)read_byte(gb, gb->cpu_reg.PC++);
+			gb->cpu_reg.PC += temp;
+			inst_cycles += 4;
+		}
+		else
+			gb->cpu_reg.PC++;
+
+		break;
+
+	case 0x29:
+	{
+		uf32 temp = gb->cpu_reg.HL + gb->cpu_reg.HL;
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = (temp & 0x1000) ? 1 : 0;
+		gb->cpu_reg.raw_bits.C = (temp & 0xFFFF0000) ? 1 : 0;
+		gb->cpu_reg.HL = (temp & 0x0000FFFF);
+		break;
+	}
+
+	case 0x2A:
+		gb->cpu_reg.a = read_byte(gb, gb->cpu_reg.HL++);
+		break;
+
+	case 0x2B:
+		gb->cpu_reg.HL--;
+		break;
+
+	case 0x2C:
+		gb->cpu_reg.L++;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.L == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.L & 0x0F) == 0x00);
+		break;
+
+	case 0x2D:
+		gb->cpu_reg.L--;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.L == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.L & 0x0F) == 0x0F);
+		break;
+
+	case 0x2E:
+		gb->cpu_reg.L = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x2F:
+		gb->cpu_reg.a = ~gb->cpu_reg.a;
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = 1;
+		break;
+
+	case 0x30:
+		if (!gb->cpu_reg.raw_bits.C)
+		{
+			int8_t temp = (int8_t)read_byte(gb, gb->cpu_reg.PC++);
+			gb->cpu_reg.PC += temp;
+			inst_cycles += 4;
+		}
+		else
+			gb->cpu_reg.PC++;
+
+		break;
+
+	case 0x31:
+		gb->cpu_reg.SP = read_byte(gb, gb->cpu_reg.PC++);
+		gb->cpu_reg.SP |= read_byte(gb, gb->cpu_reg.PC++) << 8;
+		break;
+
+	case 0x32:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.a);
+		gb->cpu_reg.HL--;
+		break;
+
+	case 0x33:
+		gb->cpu_reg.SP++;
+		break;
+
+	case 0x34:
+	{
+		u8 temp = read_byte(gb, gb->cpu_reg.HL) + 1;
+		gb->cpu_reg.raw_bits.Z = (temp == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((temp & 0x0F) == 0x00);
+		write_byte(gb, gb->cpu_reg.HL, temp);
+		break;
+	}
+
+	case 0x35:
+	{
+		u8 temp = read_byte(gb, gb->cpu_reg.HL) - 1;
+		gb->cpu_reg.raw_bits.Z = (temp == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((temp & 0x0F) == 0x0F);
+		write_byte(gb, gb->cpu_reg.HL, temp);
+		break;
+	}
+
+	case 0x36:
+		write_byte(gb, gb->cpu_reg.HL, read_byte(gb, gb->cpu_reg.PC++));
+		break;
+
+	case 0x37:
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = 0;
+		gb->cpu_reg.raw_bits.C = 1;
+		break;
+
+	case 0x38:
+		if (gb->cpu_reg.raw_bits.C)
+		{
+			int8_t temp = (int8_t)read_byte(gb, gb->cpu_reg.PC++);
+			gb->cpu_reg.PC += temp;
+			inst_cycles += 4;
+		}
+		else
+			gb->cpu_reg.PC++;
+
+		break;
+
+	case 0x39:
+	{
+		uf32 temp = gb->cpu_reg.HL + gb->cpu_reg.SP;
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H =
+			((gb->cpu_reg.HL & 0xFFF) + (gb->cpu_reg.SP & 0xFFF)) & 0x1000 ? 1 : 0;
+		gb->cpu_reg.raw_bits.C = temp & 0x10000 ? 1 : 0;
+		gb->cpu_reg.HL = (u16)temp;
+		break;
+	}
+
+	case 0x3A:
+		gb->cpu_reg.a = read_byte(gb, gb->cpu_reg.HL--);
+		break;
+
 	default:
 		(gb->Error)(gb, INVALID_OPCODE, opcode);
 	}
