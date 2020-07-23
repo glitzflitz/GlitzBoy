@@ -676,6 +676,265 @@ void cpu_step(Gameboy *gb)
 		gb->cpu_reg.a = read_byte(gb, gb->cpu_reg.HL--);
 		break;
 
+	case 0x3B:
+		gb->cpu_reg.SP--;
+		break;
+
+	case 0x3C:
+		gb->cpu_reg.a++;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.a == 0x00);
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.a & 0x0F) == 0x00);
+		break;
+
+	case 0x3D:
+		gb->cpu_reg.a--;
+		gb->cpu_reg.raw_bits.Z = (gb->cpu_reg.a == 0x00);
+		gb->cpu_reg.raw_bits.N = 1;
+		gb->cpu_reg.raw_bits.H = ((gb->cpu_reg.a & 0x0F) == 0x0F);
+		break;
+
+	case 0x3E:
+		gb->cpu_reg.a = read_byte(gb, gb->cpu_reg.PC++);
+		break;
+
+	case 0x3F:
+		gb->cpu_reg.raw_bits.N = 0;
+		gb->cpu_reg.raw_bits.H = 0;
+		gb->cpu_reg.raw_bits.C = ~gb->cpu_reg.raw_bits.C;
+		break;
+
+	case 0x40:
+		break;
+
+	case 0x41:
+		gb->cpu_reg.B = gb->cpu_reg.C;
+		break;
+
+	case 0x42:
+		gb->cpu_reg.B = gb->cpu_reg.D;
+		break;
+
+	case 0x43:
+		gb->cpu_reg.B = gb->cpu_reg.E;
+		break;
+
+	case 0x44:
+		gb->cpu_reg.B = gb->cpu_reg.H;
+		break;
+
+	case 0x45:
+		gb->cpu_reg.B = gb->cpu_reg.L;
+		break;
+
+	case 0x46:
+		gb->cpu_reg.B = read_byte(gb, gb->cpu_reg.HL);
+		break;
+
+	case 0x47:
+		gb->cpu_reg.B = gb->cpu_reg.a;
+		break;
+
+	case 0x48:
+		gb->cpu_reg.C = gb->cpu_reg.B;
+		break;
+
+	case 0x49:
+		break;
+
+	case 0x4A:
+		gb->cpu_reg.C = gb->cpu_reg.D;
+		break;
+
+	case 0x4B:
+		gb->cpu_reg.C = gb->cpu_reg.E;
+		break;
+
+	case 0x4C:
+		gb->cpu_reg.C = gb->cpu_reg.H;
+		break;
+
+	case 0x4D:
+		gb->cpu_reg.C = gb->cpu_reg.L;
+		break;
+
+	case 0x4E:
+		gb->cpu_reg.C = read_byte(gb, gb->cpu_reg.HL);
+		break;
+
+	case 0x4F:
+		gb->cpu_reg.C = gb->cpu_reg.a;
+		break;
+
+	case 0x50:
+		gb->cpu_reg.D = gb->cpu_reg.B;
+		break;
+
+	case 0x51:
+		gb->cpu_reg.D = gb->cpu_reg.C;
+		break;
+
+	case 0x52:
+		break;
+
+	case 0x53:
+		gb->cpu_reg.D = gb->cpu_reg.E;
+		break;
+
+	case 0x54:
+		gb->cpu_reg.D = gb->cpu_reg.H;
+		break;
+
+	case 0x55:
+		gb->cpu_reg.D = gb->cpu_reg.L;
+		break;
+
+	case 0x56:
+		gb->cpu_reg.D = read_byte(gb, gb->cpu_reg.HL);
+		break;
+
+	case 0x57:
+		gb->cpu_reg.D = gb->cpu_reg.a;
+		break;
+
+	case 0x58:
+		gb->cpu_reg.E = gb->cpu_reg.B;
+		break;
+
+	case 0x59:
+		gb->cpu_reg.E = gb->cpu_reg.C;
+		break;
+
+	case 0x5A:
+		gb->cpu_reg.E = gb->cpu_reg.D;
+		break;
+
+	case 0x5B:
+		break;
+
+	case 0x5C:
+		gb->cpu_reg.E = gb->cpu_reg.H;
+		break;
+
+	case 0x5D:
+		gb->cpu_reg.E = gb->cpu_reg.L;
+		break;
+
+	case 0x5E:
+		gb->cpu_reg.E = read_byte(gb, gb->cpu_reg.HL);
+		break;
+
+	case 0x5F:
+		gb->cpu_reg.E = gb->cpu_reg.a;
+		break;
+
+	case 0x60:
+		gb->cpu_reg.H = gb->cpu_reg.B;
+		break;
+
+	case 0x61:
+		gb->cpu_reg.H = gb->cpu_reg.C;
+		break;
+
+	case 0x62:
+		gb->cpu_reg.H = gb->cpu_reg.D;
+		break;
+
+	case 0x63:
+		gb->cpu_reg.H = gb->cpu_reg.E;
+		break;
+
+	case 0x64:
+		break;
+
+	case 0x65:
+		gb->cpu_reg.H = gb->cpu_reg.L;
+		break;
+
+	case 0x66:
+		gb->cpu_reg.H = read_byte(gb, gb->cpu_reg.HL);
+		break;
+
+	case 0x67:
+		gb->cpu_reg.H = gb->cpu_reg.a;
+		break;
+
+	case 0x68:
+		gb->cpu_reg.L = gb->cpu_reg.B;
+		break;
+
+	case 0x69:
+		gb->cpu_reg.L = gb->cpu_reg.C;
+		break;
+
+	case 0x6A:
+		gb->cpu_reg.L = gb->cpu_reg.D;
+		break;
+
+	case 0x6B:
+		gb->cpu_reg.L = gb->cpu_reg.E;
+		break;
+
+	case 0x6C:
+		gb->cpu_reg.L = gb->cpu_reg.H;
+		break;
+
+	case 0x6D:
+		break;
+
+	case 0x6E:
+		gb->cpu_reg.L = read_byte(gb, gb->cpu_reg.HL);
+		break;
+
+	case 0x6F:
+		gb->cpu_reg.L = gb->cpu_reg.a;
+		break;
+
+	case 0x70:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.B);
+		break;
+
+	case 0x71:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.C);
+		break;
+
+	case 0x72:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.D);
+		break;
+
+	case 0x73:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.E);
+		break;
+
+	case 0x74:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.H);
+		break;
+
+	case 0x75:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.L);
+		break;
+
+	case 0x76:
+
+		gb->halt = 1;
+		break;
+
+	case 0x77:
+		write_byte(gb, gb->cpu_reg.HL, gb->cpu_reg.a);
+		break;
+
+	case 0x78:
+		gb->cpu_reg.a = gb->cpu_reg.B;
+		break;
+
+	case 0x79:
+		gb->cpu_reg.a = gb->cpu_reg.C;
+		break;
+
+	case 0x7A:
+		gb->cpu_reg.a = gb->cpu_reg.D;
+		break;
+
 	default:
 		(gb->Error)(gb, INVALID_OPCODE, opcode);
 	}
