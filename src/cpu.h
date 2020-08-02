@@ -2069,4 +2069,149 @@ void cpu_step(Gameboy *gb)
 		(gb->Error)(gb, INVALID_OPCODE, opcode);
 	}
 
+	gb->timer.div_count += inst_cycles;
+
+	if (gb->timer.div_count >= DIV_CYCLES)
+	{
+		gb->hw_reg.DIV++;
+		gb->timer.div_count -= DIV_CYCLES;
+	}
+
+	if (gb->hw_reg.SC & SERIAL_SC_TX_START)
+	{
+
+		if (gb->timer.serial_count == 0 && gb->serial_transmit != NULL)
+			(gb->serial_transmit)(gb, gb->hw_reg.SB);
+
+		gb->timer.serial_count += inst_cycles;
+
+		if (gb->timer.serial_count >= SERIAL_CYCLES)
+		{
+
+			u8 rx;
+
+			if (gb->serial_recv != NULL &&
+				(gb->serial_recv(gb, &rx) ==
+				 0))
+			{
+				gb->hw_reg.SB = rx;
+
+				gb->hw_reg.SC &= 0x01;
+				gb->hw_reg.IF |= SERIAL_INTR;
+			}
+			else if (gb->hw_reg.SC & SERIAL_SC_CLOCK_SRC)
+			{
+
+				gb->hw_reg.SB = 0xFF;
+
+				gb->hw_reg.SC &= 0x01;
+				gb->hw_reg.IF |= SERIAL_INTR;
+			}
+			else
+			{
+			}
+
+			gb->timer.serial_count = 0;
+		}
+	}
+
+	if (gb->hw_reg.enable)
+	{
+		static const uf16 TAC_CYCLES[4] = {1024, 16, 64, 256};
+
+		gb->timer.tima_count += inst_cycles;
+
+		while (gb->timer.tima_count >= TAC_CYCLES[gb->hw_reg.rate])
+		{
+			gb->timer.tima_count -= TAC_CYCLES[gb->hw_reg.rate];
+
+			if (++gb->hw_reg.TIMA == 0)
+			{
+				gb->hw_reg.IF |= TIMER_INTR;
+
+				gb->hw_reg.TIMA = gb->hw_reg.TMA;
+			}
+		}
+	}
+
+	if ((gb->hw_reg.LCDC & LCDC_ENABLE) == 0)
+		return;
+
+	gb->timer.lcd_count += inst_cycles;
+
+	if (gb->timer.lcd_count > LCD_LINE_CYCLES)
+	{
+		gb->timer.lcd_count -= LCD_LINE_CYCLES;
+
+		if (gb->hw_reg.LY == gb->hw_reg.LYC)
+		{
+			gb->hw_reg.STAT |= STAT_LYC_COINC;
+
+			if (gb->hw_reg.STAT & STAT_LYC_INTR)
+				gb->hw_reg.IF |= LCDC_INTR;
+		}
+		else
+			gb->hw_reg.STAT &= 0xFB;
+
+		gb->hw_reg.LY = (gb->hw_reg.LY + 1) % LCD_VERT_LINES;
+
+		if (gb->hw_reg.LY == LCD_HEIGHT)
+		{
+			gb->lcd_mode = LCD_VBLANK;
+			gb->frame = 1;
+			gb->hw_reg.IF |= VBLANK_INTR;
+
+			if (gb->hw_reg.STAT & STAT_MODE_1_INTR)
+				gb->hw_reg.IF |= LCDC_INTR;
+
+			if (gb->direct.skipframe)
+			{
+				gb->display.frame_skip_count =
+					!gb->display.frame_skip_count;
+			}
+
+			if (gb->direct.interlace &&
+				(!gb->direct.skipframe ||
+				 gb->display.frame_skip_count))
+			{
+				gb->display.interlace_count =
+					!gb->display.interlace_count;
+			}
+		}
+
+		else if (gb->hw_reg.LY < LCD_HEIGHT)
+		{
+			if (gb->hw_reg.LY == 0)
+			{
+
+				gb->display.WY = gb->hw_reg.WY;
+				gb->display.window_clear = 0;
+			}
+
+			gb->lcd_mode = LCD_HBLANK;
+
+			if (gb->hw_reg.STAT & STAT_MODE_0_INTR)
+				gb->hw_reg.IF |= LCDC_INTR;
+		}
+	}
+	else if (gb->lcd_mode == LCD_HBLANK && gb->timer.lcd_count >= LCD_MODE_2_CYCLES)
+	{
+		gb->lcd_mode = LCD_SEARCH_OAM;
+
+		if (gb->hw_reg.STAT & STAT_MODE_2_INTR)
+			gb->hw_reg.IF |= LCDC_INTR;
+	}
+	else if (gb->lcd_mode == LCD_SEARCH_OAM && gb->timer.lcd_count >= LCD_MODE_3_CYCLES)
+	{
+		gb->lcd_mode = LCD_TRANSFER;
+		draw_line(gb);
+	}
+}
+
+void run_cpu(Gameboy *gb)
+{
+	gb->frame = 0;
+
+	while (!gb->frame)
+		cpu_step(gb);
 }
