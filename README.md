@@ -2,6 +2,13 @@
 A fast cross platform Gamboy(DMG) emulator written in C. \
 GlitzBoy supports sound, several hardware types, and RTC
 
+## Screenshots
+![Screenshot 1](https://raw.githubusercontent.com/glitzflitz/GlitzBoy/master/Screenshots/zelda.png)
+![Screenshot 2](https://raw.githubusercontent.com/glitzflitz/GlitzBoy/master/Screenshots/donkeykong.png)
+![Screenshot 3](https://raw.githubusercontent.com/glitzflitz/GlitzBoy/master/Screenshots/dragonheart.png)
+![Screenshot 4](https://raw.githubusercontent.com/glitzflitz/GlitzBoy/master/Screenshots/pokemonblue.png)
+
+
 Implemented
 -----------
 
@@ -36,4 +43,5 @@ make
 ```
 
 ## Emulation Accuracy
-Currently, GlitzBoy passes [Blargg's](http://gbdev.gg8.se/files/roms/blargg-gb-tests/) CPU instruction test cases and and CPU instruction timing test cases.
+Although the goal of this emulator is speed over accuracy, GlitzBoy passes [Blargg's](http://gbdev.gg8.se/files/roms/blargg-gb-tests/) CPU instruction test cases and and CPU instruction timing test cases.
+![CPU_Test](https://raw.githubusercontent.com/glitzflitz/GlitzBoy/master/Screenshots/cpu_test.png)
