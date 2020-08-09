@@ -28,7 +28,6 @@ Implemented
   - MBC3 (with RTC)
   - MBC5
   - save games
-* Progress Saving
 
 
 
