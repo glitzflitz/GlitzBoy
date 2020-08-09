@@ -1,0 +1,11 @@
+*.o
+*.gch
+*.gcda
+*.a
+*.dll
+*.so
+*.exe
+GlitzBoy
+tags
+.vscode/
+
