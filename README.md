@@ -43,5 +43,5 @@ make
 ```
 
 ## Emulation Accuracy
-Although the goal of this emulator is speed over accuracy, GlitzBoy passes [Blargg's](http://gbdev.gg8.se/files/roms/blargg-gb-tests/) CPU instruction test cases and and CPU instruction timing test cases.
+Although the goal of this emulator is speed over accuracy, GlitzBoy passes [Blargg's](http://gbdev.gg8.se/files/roms/blargg-gb-tests/) CPU instruction test cases and CPU instruction timing test cases.
 ![CPU_Test](https://raw.githubusercontent.com/glitzflitz/GlitzBoy/master/Screenshots/cpu_test.png)
