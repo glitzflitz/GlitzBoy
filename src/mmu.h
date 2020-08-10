@@ -170,6 +170,7 @@ void write_byte(Gameboy *gb, const uf16 address, const u8 value)
 				gb->selected_rom_bank % gb->num_rom_banks;
 			return;
 		}
+		// Fall through
 
 	case 0x3:
 		if (gb->mbc == 1)

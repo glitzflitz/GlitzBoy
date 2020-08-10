@@ -15,7 +15,7 @@ Implemented
 * CPU
   - All instructions correct
   - All timings correct
-  - Double speed mode
+  - Double, triple, quadruple speed mode
 * GPU
   - Normal mode
   - Color mode
