@@ -1,4 +1,5 @@
 # GlitzBoy
+[![Build Status](https://travis-ci.org/glitzflitz/GlitzBoy.svg?branch=master)](https://travis-ci.org/glitzflitz/GlitzBoy)\
 A fast cross platform Gamboy(DMG) emulator written in C. \
 GlitzBoy supports sound, several hardware types, and RTC
 
