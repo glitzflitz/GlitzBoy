@@ -1,8 +1,14 @@
 dist: xenial
 sudo: required
-language: C
+language: c
 before_install:
   - sudo apt-get update
-  - sudo apt-get -y install libsdl2-dev
+  - |
+  travis_retry curl -L https://www.libsdl.org/release/SDL2-2.0.8.tar.gz | tar xz
+  cd SDL2-2.0.8
+  ./configure
+  make
+  sudo make install
+
 script: make
 
