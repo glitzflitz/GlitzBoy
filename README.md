@@ -34,7 +34,8 @@ Implemented
 
 
 ## Installation
-First make sure SDL2 is installed on your platform
+First make sure SDL2 is installed on your platform.\
+Instructions for [Linux](https://wiki.libsdl.org/Installation), [Mac](https://stackoverflow.com/questions/47295218/install-sdl2-in-mac) and [Windows](https://w3.cs.jmu.edu/bernstdh/Web/common/help/cpp_mingw-sdl-setup.php)
 ```
 git clone https://github.com/glitzflitz/GlitzBoy.git
 cd GlitzBoy
